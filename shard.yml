@@ -11,6 +11,6 @@ crystal: 1.0.0
 license: Apache 2.0
 
 dependencies:
-  ws_clients:
-    github: BrucePerens/ws_service
+  ws_client:
+    github: BrucePerens/ws_client
     
