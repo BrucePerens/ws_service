@@ -1,5 +1,5 @@
 require "http/server/handler"
-require "./ws_client"
+require "ws_client"
 require "log"
 
 # Notes
