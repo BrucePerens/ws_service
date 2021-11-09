@@ -1,7 +1,7 @@
 # ws_service
 Easier, cleaner websocket services for Crystal web servers and web frameworks
 
-`WS_Service` is a base class for WebSocket services,
+`WS_Service` is a base class for WebSocket services
 that does a lot of the work for you:
 * Provides middleware to accept the WebSocket connection and automatically
   instantiate the class you have defined for that specifc service.
@@ -115,10 +115,6 @@ end
 There are methods available to your class for sending data and managing the
 connection:
 ```crystal
-   # This will send a binary message if the argument is `Bytes`, and a textual
-   # message if the argument is `String`.
-   send(data : String|Bytes)
-
    # Close the connection.
    close(
     # Optional argument, the code sent to the client's close handler.
@@ -132,6 +128,10 @@ connection:
 
    # Is the connection open?
    is_open? : Bool
+
+   # This will send a binary message if the argument is `Bytes`, and a textual
+   # message if the argument is `String`.
+   send(data)
 ```
 
 You can gracefully close all WS_Service connections by calling this:
