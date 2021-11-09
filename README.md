@@ -15,7 +15,7 @@ that does a lot of the work for you:
 * Handles keepalive pings without your attention.
 
 Services are implemented as classes that are children of `WS_Service`.
-`WS_Middleware.instance` is an `HTTP::Handler that connects to `HTTP::Server` and
+`WS_Middleware.instance` is an `HTTP::Handler` that connects to `HTTP::Server` and
 accepts WebSocket connections for you, selecting the required `WS_Service` class
 out of many potential services, and instantiating it per connection.
 
