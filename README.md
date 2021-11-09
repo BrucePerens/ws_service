@@ -19,7 +19,8 @@ Services are implemented as classes that are children of `WS_Service`.
 accepts WebSocket connections for you, selecting the required `WS_Service` class
 out of many potential services, and instantiating it per connection.
 
-To use it, first connect `WS_Middleware.instance` to `HTTP::Server`. If you have
+## How To Use
+First, connect `WS_Middleware.instance` to `HTTP::Server`. If you have
 a stand-alone server, this is done as you instantiate `HTTP::Server`:
 ```crystal
  server = HTTP::Server.new([
@@ -155,7 +156,7 @@ unresponding clients, even if you don't.
    def on_pong(message : String)
    end
 ```
-And these less-often-used methods are available to you for sending data pings and
+And these less-often-used methods are available to you for sending pings and
 pongs.
 ```crystal
    # Send a ping.
@@ -164,7 +165,7 @@ pongs.
    # Send a pong.
    pong(message : String)
 ```
-##Security Notes
+## Security Notes
 WebSockets are not restricted by the same-origin policy
 (see https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
 Thus, it's not advised to use cookies for authentication.
@@ -174,7 +175,7 @@ that the "Origin" header names your site. This may protect users from
 cross-site websocket hijacking in sites that they visit. Crafty software can
 still put anything it wishes in the origin header.
 
-##Writing Your Client
+## Writing Your Client
 
 There is a symmtrical shard for building clients, see
 https://github.com/BrucePerens/ws_client .
