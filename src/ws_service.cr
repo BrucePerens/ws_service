@@ -26,7 +26,7 @@ class WS::Middleware
 
   def initialize
     @protocols = Hash(String, WS::Service.class).new
-    if @@instance && @instance != self
+    if @@instance && @@instance != self
       raise RuntimeError.new("Use WS::Middleware.instance, not WS::Middleware.new")
     end
   end
