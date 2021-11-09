@@ -164,6 +164,17 @@ pongs.
    # Send a pong.
    pong(message : String)
 ```
+==Security Notes
+WebSockets are not restricted by the same-origin policy
+(see https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
+Thus, it's not advised to use cookies for authentication.
+
+To enforce your own origin policy, you can check
+that the "Origin" header names your site. This may protect users from
+cross-site websocket hijacking in sites that they visit. Crafty software can
+still put anything it wishes in the origin header.
+
+==Writing Your Client
 
 There is a symmtrical shard for building clients, see
 https://github.com/BrucePerens/ws_client .
