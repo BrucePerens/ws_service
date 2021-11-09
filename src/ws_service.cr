@@ -127,7 +127,7 @@ abstract class WS_Service < WS_Protocol
   end
   extend ClassMethods
 
-  @@connections = Hash(WS_Protocol, WS_Protocol).new
+  @@connections = Hash(WS_Service, WS_Service).new
   property subprotocol : String?
   getter last_pong_received : Time
   @ping_fiber : Fiber?

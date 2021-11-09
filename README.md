@@ -71,14 +71,14 @@ Implement whatever of these methods you need in your class:
 
    # A `URI::Params containing the query parmaeters, which can be used by the client
    # to send additional data for authentication and initialization. For example,
-   # if they client connects to "ws://my.host/inform?a=1&b=2&c=Bruce",
+   # if the client connects to "ws://my.host/inform?a=1&b=2&c=Bruce",
    # params["a"] will contain "1", and params["c"] will contain "Bruce".
    params : URI::Params,
 
    # You may optionally implement subprotocols in your service. If you do, the client
    # can ask for one or more subprotocols, in order of preference. They will be
    # listed here. If you implement subprotocols, set `self.subprotocol=` to
-   # the client-requested one you choose accept, in the `authenticate` method.
+   # the client-requested one you choose to accept, in the `authenticate` method.
    # It will be returned in the "Sec-Websocket-Protocol" header in the response.
    requested_subprotocols : Array(String),
 
@@ -92,10 +92,6 @@ Implement whatever of these methods you need in your class:
     true
   end
 
-  # This is called when your WebSocket is connected. You may now send to the peer.
-  def on_connect
-  end
-
   # This is called when binary data is received.
   def on_binary(b : Bytes)
   end
@@ -104,7 +100,11 @@ Implement whatever of these methods you need in your class:
   def on_close(code : HTTP::WebSocket::CloseCode, message : String)
   end
 
-  # This is called when a string data is received.
+  # This is called when your WebSocket is connected. You may now send to the peer.
+  def on_connect
+  end
+
+  # This is called when string data is received.
   def on_message(message : String)
   end
 end

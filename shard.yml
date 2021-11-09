@@ -1,5 +1,5 @@
 name: ws_service
-version: 0.1.1
+version: 0.1.2
 
 description: Easier, cleaner WebSocket services for Crystal applications and web frameworks.
 
