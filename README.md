@@ -1,7 +1,7 @@
 # ws_service
 Easier, cleaner websocket services for Crystal web servers and web frameworks
 
-`WS_Service` is a base class for WebSocket services
+`WS::Service` is a base class for WebSocket services
 that does a lot of the work for you:
 * Provides middleware to accept the WebSocket connection and automatically
   instantiate the class you have defined for that specifc service.
@@ -14,17 +14,17 @@ that does a lot of the work for you:
 * Connects all WebSocket event handlers to your class methods automatically.
 * Handles keepalive pings without your attention.
 
-Services are implemented as classes that are children of `WS_Service`.
-`WS_Middleware.instance` is an `HTTP::Handler` that connects to `HTTP::Server` and
-accepts WebSocket connections for you, selecting the required `WS_Service` class
+Services are implemented as classes that are children of `WS::Service`.
+`WS::Middleware.instance` is an `HTTP::Handler` that connects to `HTTP::Server` and
+accepts WebSocket connections for you, selecting the required `WS::Service` class
 out of many potential services, and instantiating it per connection.
 
 ## How To Use
-First, connect `WS_Middleware.instance` to `HTTP::Server`. If you have
+First, connect `WS::Middleware.instance` to `HTTP::Server`. If you have
 a stand-alone server, this is done as you instantiate `HTTP::Server`:
 ```crystal
  server = HTTP::Server.new([
-   WS_Middleware.instance,
+   WS::Middleware.instance,
    # Additional handlers go here.
  ])
 ```
@@ -37,7 +37,7 @@ class AppServer < Lucky::BaseAppServer
   # https://luckyframework.org/guides/http-and-routing/http-handlers
   def middleware : Array(HTTP::Handler)
     [
-      WS_Middleware.instance, # Add this one.
+      WS::Middleware.instance, # Add this one.
 
       # There is a long list of handlers here.
 
@@ -45,21 +45,21 @@ class AppServer < Lucky::BaseAppServer
   end
 ```
 
-Create your own service as a child of `WS_Service`. Define a `self.path` class
+Create your own service as a child of `WS::Service`. Define a `self.path` class
 method to return the path to your WebSocket service. This example sets the
 path to "/inform":
 ```crystal
-class MyService < WS_Service
+class MyService < WS::Service
   # You must define a self.path method. The path should start with a '/' character.
   def self.path
     "/inform"
   end
 end
 ```
-Your class will automatically be registered with `WS_Middleware.instance`, and when
-`WS_Middleware.instance` gets a request for a WebSocket service with "/inform" as
+Your class will automatically be registered with `WS::Middleware.instance`, and when
+`WS::Middleware.instance` gets a request for a WebSocket service with "/inform" as
 the path, it will instantiate your class. There may be any number of different
-WebSocket services, implement a child class of `WS_Service` for each one.
+WebSocket services, implement a child class of `WS::Service` for each one.
 
 Implement whatever of these methods you need in your class:
 ```crystal
@@ -134,9 +134,9 @@ connection:
    send(data)
 ```
 
-You can gracefully close all WS_Service connections by calling this:
+You can gracefully close all WS::Service connections by calling this:
 ```crystal
-  WS_Service.graceful_shutdown(message : String)
+  WS::Service.graceful_shutdown(message : String)
 ```
 This is generally done when shutting down a server, etc.
 
@@ -145,7 +145,7 @@ This will also gracefully close the WebSocket when your application exits, or wh
 your class is garbage-collected.
 
 You can implement less-often-used methods which mirror those in WebSocket. But
-`WS_Service` will send keep-alive pings to clients, and close connections to
+`WS::Service` will send keep-alive pings to clients, and close connections to
 unresponding clients, even if you don't.
 ```crystal
    # Called upon receipt of a ping.

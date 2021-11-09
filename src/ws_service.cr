@@ -16,16 +16,19 @@ require "log"
 # Accept registrations of websocket protocols.
 # Accept websocket connections on behalf of those protocols.
 # This is meant to be part of a middleware stack associated with HTTP::Server.
-class WS_Middleware
+class WS::Middleware
   include HTTP::Handler
 
   @@instance : self = self.new
 
   # This contains all of the registered protocols.
-  @protocols : Hash(String, WS_Service.class)
+  @protocols : Hash(String, WS::Service.class)
 
   def initialize
-    @protocols = Hash(String, WS_Service.class).new
+    @protocols = Hash(String, WS::Service.class).new
+    if @@instance && @instance != self
+      raise RuntimeError.new("Use WS::Middleware.instance, not WS::Middleware.new")
+    end
   end
 
   def self.instance
@@ -66,7 +69,7 @@ class WS_Middleware
       )
         # The connection is authenticated.
 
-        # If the WS_Service derivative class has set `self.subprotocol=` to the
+        # If the WS::Service derivative class has set `self.subprotocol=` to the
         # selected subprotocol name, tell the client that the connection is using
         # that subprotocol in the Sec-WebSocket-Protocol header.
         if (ps = protocol.subprotocol)
@@ -97,7 +100,7 @@ class WS_Middleware
     end
   end
 
-  def register(path : String, protocol : WS_Service.class)
+  def register(path : String, protocol : WS::Service.class)
     @protocols[path] = protocol
   end
 
@@ -106,19 +109,19 @@ class WS_Middleware
   end
 end
 
-# Server version of WS_Protocol. Make a derivative of this class, and it will
-# automatically be registered with WS_Middleware, and will handle service requests
+# Server version of WS::Protocol. Make a derivative of this class, and it will
+# automatically be registered with WS::Middleware, and will handle service requests
 # for its #path.
-abstract class WS_Service < WS_Protocol
+abstract class WS::Service < WS::Protocol
   # Automatically register any derived class that is *not* abstract.
   macro inherited
     {% if !@type.abstract? %}
-      WS_Middleware.instance.register(self.path, self)
+      WS::Middleware.instance.register(self.path, self)
     {% end %}
   end
 
   # Kludge to allow us to declare an abstract class method.
-  # Every derived class of WS_Service must declare the path string used to connect
+  # Every derived class of WS::Service must declare the path string used to connect
   # to it. This has to be in a module, as Crystal won't allow an abstract class
   # method to be directly declared as `abstract def self.path`. It does
   # allow it to be declared in a module and then used to extend a class.
@@ -127,7 +130,7 @@ abstract class WS_Service < WS_Protocol
   end
   extend ClassMethods
 
-  @@connections = Hash(WS_Service, WS_Service).new
+  @@connections = Hash(WS::Service, WS::Service).new
   property subprotocol : String?
   getter last_pong_received : Time
   @ping_fiber : Fiber?
@@ -176,8 +179,8 @@ abstract class WS_Service < WS_Protocol
   end
 
   # This is called when your WebSocket is connected. You may now send to the peer.
-  # `WS_Client` doesn't have this method, because the constructor doesn't return
-  # until the connection is valid. In `WS_Service`, `#authenticate` is called before
+  # `WS::Client` doesn't have this method, because the constructor doesn't return
+  # until the connection is valid. In `WS::Service`, `#authenticate` is called before
   # the connection is made, to decide whether to make it or not. Then `#connect`
   # is called when the connection is actually valid.
   def on_connect
