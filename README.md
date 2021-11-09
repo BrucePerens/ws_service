@@ -44,11 +44,11 @@ class AppServer < Lucky::BaseAppServer
   end
 ```
 
-Create your own service as a child of `WS_Client`. Define a `self.path` class
+Create your own service as a child of `WS_Service`. Define a `self.path` class
 method to return the path to your WebSocket service. This example sets the
 path to "/inform":
 ```crystal
-class MyService < WS_Client
+class MyService < WS_Service
   # You must define a self.path method. The path should start with a '/' character.
   def self.path
     "/inform"
@@ -164,7 +164,7 @@ pongs.
    # Send a pong.
    pong(message : String)
 ```
-==Security Notes
+##Security Notes
 WebSockets are not restricted by the same-origin policy
 (see https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
 Thus, it's not advised to use cookies for authentication.
@@ -174,7 +174,7 @@ that the "Origin" header names your site. This may protect users from
 cross-site websocket hijacking in sites that they visit. Crafty software can
 still put anything it wishes in the origin header.
 
-==Writing Your Client
+##Writing Your Client
 
 There is a symmtrical shard for building clients, see
 https://github.com/BrucePerens/ws_client .
