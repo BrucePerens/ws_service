@@ -3,9 +3,9 @@ Easier, cleaner websocket services for Crystal web servers and web frameworks
 
 `WS_Service` is a base class for WebSocket services,
 that does a lot of the work for you:
-* Provides middleware to accept the WebSocket connection automatically
-  instantiate the class you have defined for that specifc service,
-  not just in Crystal applications, but in _web frameworks_.
+* Provides middleware to accept the WebSocket connection and automatically
+  instantiate the class you have defined for that specifc service.
+  This works in Crystal applications, and in _web frameworks_ like *Lucky*.
 * Provides a versatile authentication interface so that you can authenticate
   or reject connecting clients with a few lines of code.
 * Allows the client to easily pass any number of parameters before the connection
@@ -15,12 +15,12 @@ that does a lot of the work for you:
 * Handles keepalive pings without your attention.
 
 Services are implemented as classes that are children of `WS_Service`.
-`WS_Middleware.instance` is a HTTP::Handler that connects to HTTP::Server and
-accepts WebSocket connections for you, selecting the required WS_Service class
+`WS_Middleware.instance` is an `HTTP::Handler that connects to `HTTP::Server` and
+accepts WebSocket connections for you, selecting the required `WS_Service` class
 out of many potential services, and instantiating it per connection.
 
-To use it, first connect `WS_Middleware.instance` to HTTP::Server. If you have
-a stand-alone server, this is done as you instantiate HTTP::Server:
+To use it, first connect `WS_Middleware.instance` to `HTTP::Server`. If you have
+a stand-alone server, this is done as you instantiate `HTTP::Server`:
 ```crystal
  server = HTTP::Server.new([
    WS_Middleware.instance,
@@ -44,11 +44,12 @@ class AppServer < Lucky::BaseAppServer
   end
 ```
 
-Create your own service derived from `WS_Client`. Define a `self.path` class
-method to return the path to your WebSocket service. For example, "/inform".
+Create your own service as a child of `WS_Client`. Define a `self.path` class
+method to return the path to your WebSocket service. This example sets the
+path to "/inform":
 ```crystal
 class MyService < WS_Client
-  # You must define a self.path method. It should start with a '/' character.
+  # You must define a self.path method. The path should start with a '/' character.
   def self.path
     "/inform"
   end
@@ -62,9 +63,8 @@ WebSocket services, implement a child class of `WS_Service` for each one.
 Implement whatever of these methods you need in your class:
 ```crystal
   # Authenticate the incoming connection. Return `true` if it should be accepted,
-  # `false` otherwise. This is meant to be overridden by the derivative class.
-  # The WebSocket isn't opened until after this method returns, so it's not possible
-  # to send to the client in this method.
+  # `false` otherwise. The WebSocket isn't opened until after this method returns,
+  # so it's not possible to send to the client in this method.
   def authenticate(
    # The requested path, without any query parameters.
    path : String,
@@ -120,7 +120,12 @@ connection:
 
    # Close the connection.
    close(
-    code : HTTP::WebSocket::CloseCode = HTTP::WebSocket::CloseCode::NormalClose,
+    # Optional argument, the code sent to the client's close handler.
+    # The default is HTTP::WebSocket::NormalClose.
+    code : HTTP::WebSocket::CloseCode,
+
+    # Message to send to the client on closing. The client can process this
+    # information, but most don't. Example message: "'asta la vista, baby!".
     message : String
    )
 
