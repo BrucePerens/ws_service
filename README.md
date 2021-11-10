@@ -20,7 +20,17 @@ accepts WebSocket connections for you, selecting the required `WS::Service` clas
 out of many potential services, and instantiating it per connection.
 
 ## How To Use
-First, connect `WS::Middleware.instance` to `HTTP::Server`. If you have
+add this to your `shards.yml`
+
+```
+dependencies:
+  ...
+  ws_service:
+    github: BrucePerens/ws_service
+    version: ~> 0.2.4
+```
+
+Connect `WS::Middleware.instance` to `HTTP::Server`. If you have
 a stand-alone server, this is done as you instantiate `HTTP::Server`:
 ```crystal
  server = HTTP::Server.new([
@@ -45,12 +55,23 @@ class AppServer < Lucky::BaseAppServer
   end
 ```
 
-Create your own service as a child of `WS::Service`. Define a `self.path` class
+Create your own service as a child of `WS::Service`. Start by copying the file
+`lib/ws_service/examples/my_service.cr` . This is a template file for your
+new service, and includes a lot of the work you're instructed to do below.
+Change the name of the class, the filename, and the value returned by
+`self.path` as you wish.
+
+Add a `require` statement:
+```crystal
+require "ws_service"
+```
+Define a `self.path` class
 method to return the path to your WebSocket service. This example sets the
 path to "/inform":
 ```crystal
 class MyService < WS::Service
-  # You must define a self.path method. The path should start with a '/' character.
+  # Your service class must define a self.path method.
+  # The path should start with a '/' character.
   def self.path
     "/inform"
   end
