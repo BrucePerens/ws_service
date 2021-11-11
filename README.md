@@ -27,7 +27,7 @@ dependencies:
   ...
   ws_service:
     github: BrucePerens/ws_service
-    version: ~> 0.2.4
+    version: ~> 0.2.6
 ```
 
 Connect `WS::Middleware.instance` to `HTTP::Server`. If you have
@@ -149,6 +149,12 @@ connection:
 
    # Is the connection open?
    is_open? : Bool
+
+   # This returns a copy of the params that were passed to the `#authenticate` method
+   # in the *params* argument.
+   # Any query parameters that were passed when opening the websocket will be
+   # preserved here.
+   params : URI::Params
 
    # This will send a binary message if the argument is `Bytes`, and a textual
    # message if the argument is `String`.

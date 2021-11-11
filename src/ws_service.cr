@@ -45,6 +45,8 @@ class WS::Middleware
      && (protocol_class = @protocols[r.path]?)
       protocol = protocol_class.new
       
+      @params = r.query_params
+
       # Ask the protocol to authenticate the connection.
       if protocol.authenticate(
        # The requested path.
@@ -97,6 +99,10 @@ class WS::Middleware
     end
   end
 
+  def params
+    @params.not_nil!
+  end
+
   def register(path : String, protocol : WS::Service.class)
     @protocols[path] = protocol
   end
@@ -116,6 +122,8 @@ abstract class WS::Service < WS::Protocol
       WS::Middleware.instance.register(self.path, self)
     {% end %}
   end
+
+  @params : URI::Params? = nil
 
   # Kludge to allow us to declare an abstract class method.
   # Every derived class of WS::Service must declare the path string used to connect
