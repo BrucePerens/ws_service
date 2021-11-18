@@ -1,5 +1,6 @@
 # ws_service
-Easier, cleaner websocket services for Crystal web servers and web frameworks
+Easier, cleaner websocket services for Crystal web servers and web framework,
+including sample Javascript and Crystal clients.
 
 `WS::Service` is a base class for WebSocket services
 that does a lot of the work for you:
@@ -27,7 +28,7 @@ dependencies:
   ...
   ws_service:
     github: BrucePerens/ws_service
-    version: ~> 0.2.6
+    version: ~> 0.2.7
 ```
 
 Connect `WS::Middleware.instance` to `HTTP::Server`. If you have
@@ -204,6 +205,9 @@ still put anything it wishes in the origin header.
 
 ## Writing Your Client
 
-There is a symmtrical shard for building clients, see
+If your client is to run in the browser or Node, start by copying
+lib/ws_service/examples/client.js . Modify that as necessary.
+
+There is a symmtrical shard for building Crystal clients, see
 https://github.com/BrucePerens/ws_client .
 It exports the same API as this class, but for clients.

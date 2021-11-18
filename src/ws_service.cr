@@ -45,8 +45,6 @@ class WS::Middleware
      && (protocol_class = @protocols[r.path]?)
       protocol = protocol_class.new
       
-      @params = r.query_params
-
       # Ask the protocol to authenticate the connection.
       if protocol.authenticate(
        # The requested path.
@@ -97,10 +95,6 @@ class WS::Middleware
     @protocols.each do |key, value|
       value.graceful_shutdown
     end
-  end
-
-  def params
-    @params.not_nil!
   end
 
   def register(path : String, protocol : WS::Service.class)
@@ -175,7 +169,7 @@ abstract class WS::Service < WS::Protocol
   # be deterimend.
   def authenticate(
    path : String,
-   params : URI::Params,
+   @params : URI::Params,
    requested_subprotocols : Array(String),
    request : HTTP::Request,
    remote_address : Socket::Address?
@@ -236,5 +230,9 @@ abstract class WS::Service < WS::Protocol
   def internal_on_pong(message : String)
     @last_pong_received = Time.utc
     super
+  end
+
+  def params
+    @params.not_nil!
   end
 end

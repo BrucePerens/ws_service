@@ -1,5 +1,5 @@
 name: ws_service
-version: 0.2.6
+version: 0.2.7
 
 description: Easier, cleaner WebSocket services for Crystal applications and web frameworks.
 
@@ -13,5 +13,5 @@ license: Apache 2.0
 dependencies:
   ws_client:
     github: BrucePerens/ws_client
-    version: ~> 0.2.1
+    version: ~> 0.2.3
     
