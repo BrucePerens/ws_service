@@ -42,7 +42,7 @@ class WS::Middleware
     if r.method == "GET" \
      && (upgrade = h["Upgrade"]?) \
      && upgrade.compare("websocket", case_insensitive: true) \
-     && (protocol_class = @protocols[r.path]?)
+     && (protocol_class = @protocols[r.path.sub(%r(/$), "")]?)
       protocol = protocol_class.new
       
       # Ask the protocol to authenticate the connection.
@@ -98,7 +98,10 @@ class WS::Middleware
   end
 
   def register(path : String, protocol : WS::Service.class)
-    @protocols[path] = protocol
+    # Register the protocol. Strip trailing slash, and we'll strip that from the
+    # incoming request.path as well, so that we won't mismatch on whether there 
+    # is a trailing slash or not.
+    @protocols[path.sub(%r(/$), "")] = protocol
   end
 
   def unregister(path : String)
@@ -236,3 +239,9 @@ abstract class WS::Service < WS::Protocol
     @params.not_nil!
   end
 end
+
+# Add another layer, providing a pre-defined JSON over-wire protocol.
+abstract class WS::Service::JSON < WS::Service
+  include WS::JSON
+end
+

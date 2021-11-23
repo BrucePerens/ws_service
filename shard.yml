@@ -12,6 +12,7 @@ license: Apache 2.0
 
 dependencies:
   ws_client:
-    github: BrucePerens/ws_client
-    version: ~> 0.2.3
+    path: ../ws_client
+    # github: BrucePerens/ws_client
+    # version: ~> 0.2.3
     
