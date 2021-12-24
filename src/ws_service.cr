@@ -47,22 +47,13 @@ class WS::Middleware
       
       # Ask the protocol to authenticate the connection.
       if protocol.authenticate(
-       # The requested path.
-       path: r.path,
-
-       # You can add URL query parameters to the path, to communicate additional data.
-       params: r.query_params,
+       # The HTTP server context. This contains everything about the request.
+       c,
 
        # An array of the requested subprotocols, highest priority first.
        # If your code accepts a particular one, set `self.subprotocol=` to its
        # name, and the client will be notified.
-       requested_subprotocols: upgrade.split(%r(,\s+)) || Array(String).new(0),
-
-       # The HTTP::Request, so you can read the headers, etc.
-       request: r,
-
-       # The remote address of the client, or nil if it can't be determined.
-       remote_address: r.remote_address
+       requested_subprotocols: upgrade.split(%r(,\s+)) || Array(String).new(0)
       )
         # The connection is authenticated.
 
@@ -76,7 +67,7 @@ class WS::Middleware
         # Upgrade the connection to websocket.
         handler = HTTP::WebSocketHandler.new do |socket, context|
           # Set up the connection. 
-          protocol.internal_connect(socket)
+          protocol.internal_connect(socket, context)
           # Inform the protocol that it's connected.
         end
         # Tell the client that it's been upgraded.
@@ -171,11 +162,8 @@ abstract class WS::Service < WS::Protocol
   # *remote_address* is the remote address of the client, or nil if that can't
   # be deterimend.
   def authenticate(
-   path : String,
-   @params : URI::Params,
+   context : HTTP::Server::Context,
    requested_subprotocols : Array(String),
-   request : HTTP::Request,
-   remote_address : Socket::Address?
   ) : Bool
     true
   end
@@ -189,10 +177,11 @@ abstract class WS::Service < WS::Protocol
   end
 
   # This sets up the connection.
-  def internal_connect(s : HTTP::WebSocket)
-    super
+  def internal_connect(s : HTTP::WebSocket, context : HTTP::Server::Context)
+    @params = context.request.query_params
+    super(s)
 
-    f = @ping_fiber = Fiber.new(name: "#{self.class.name} ping") do
+    f = @ping_fiber = spawn name: "#{self.class.name} ping" do
       @last_pong_received = Time.utc
       while @socket
         # Time out if the client hasn't responded to a ping in 1 minute.
@@ -212,7 +201,6 @@ abstract class WS::Service < WS::Protocol
       end
       @ping_fiber = nil
     end
-    f.enqueue
     Fiber.yield
 
     @@connections[self] = self
@@ -244,4 +232,3 @@ end
 abstract class WS::Service::JSON < WS::Service
   include WS::JSON
 end
-
