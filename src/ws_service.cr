@@ -107,7 +107,7 @@ abstract class WS::Service < WS::Protocol
   # Automatically register any derived class that is *not* abstract.
   macro inherited
     {% if !@type.abstract? %}
-      WS::Middleware.instance.register(self.path, self)
+      WS::Middleware.instance.register(self.path, self.as(WS::Service.class))
     {% end %}
   end
 
